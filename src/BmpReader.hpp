@@ -1,3 +1,6 @@
+#ifndef BMP_READER_HPP
+#define BMP_READER_HPP
+
 #include <string>
 #include <vector>
 
@@ -43,3 +46,5 @@ class BmpReader {
         std::vector<unsigned char> data{};
         std::vector<unsigned char> extraData1{};
 };
+
+#endif
