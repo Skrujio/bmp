@@ -23,14 +23,8 @@ void BmpReader::readFromFile(const std::string& filename) {
         throw std::runtime_error("unsupported pixel format");
     }
 
-    extraData0.resize(header.offset - ifs.tellg());
-    ifs.read(reinterpret_cast<char*>(extraData0.data()), extraData0.size());
-
     data.resize(infoHeader.imageSize);
     ifs.read(reinterpret_cast<char*>(data.data()), data.size());
-
-    extraData1.resize(header.fileSize - ifs.tellg());
-    ifs.read(reinterpret_cast<char*>(extraData1.data()), extraData1.size());
 
     ifs.close();
 
@@ -47,9 +41,7 @@ void BmpReader::writeToFile(const std::string& filename) {
 
     ofs.write(reinterpret_cast<char*>(&header), sizeof(header));
     ofs.write(reinterpret_cast<char*>(&infoHeader), sizeof(infoHeader));
-    ofs.write(reinterpret_cast<char*>(extraData0.data()), extraData0.size());
     ofs.write(reinterpret_cast<char*>(data.data()), data.size());
-    ofs.write(reinterpret_cast<char*>(extraData1.data()), extraData1.size());
 
     ofs.close();
 }
@@ -67,14 +59,15 @@ void BmpReader::writeToStdout() {
     }
 }
 
-unsigned char* BmpReader::getPixel(int x, int y) {
+char* BmpReader::getPixel(int x, int y) {
     return &data[x * rowSize + y * bytesPerPixel];
 }
 
 void BmpReader::setPixel(int x, int y, int r, int g, int b) {
-    getPixel(x, y)[0] = r;
-    getPixel(x, y)[1] = g;
-    getPixel(x, y)[2] = b;
+    char* pixel = getPixel(x, y);
+    pixel[0] = r;
+    pixel[1] = g;
+    pixel[2] = b;
 }
 
 void BmpReader::invertPixel(int x, int y) {

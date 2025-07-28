@@ -28,6 +28,19 @@ struct BmpInfoHeader {
     int32_t verticalResolution{};   // 4
     int32_t colorPalette{};         // 4
     int32_t importantColors{};      // 4
+    int32_t redBitMask{};
+    int32_t greenBitMask{};
+    int32_t blueBitMask{};
+    int32_t alphaBitMask{};
+    int32_t colorSpace{};
+    int32_t colorSpaceEndpoints[9]{};
+    int32_t gammaRed{};
+    int32_t gammaGreen{};
+    int32_t gammaBlue{};
+    int32_t intent{};
+    int32_t profileData{};
+    int32_t profileSize{};
+    int32_t reserved{};
 };
 #pragma pack(pop)
 
@@ -38,18 +51,16 @@ class BmpReader {
         void writeToFile(const std::string& filename);
         void writeToStdout();
         void drawLine(int x0, int y0, int x1, int y1);
-        unsigned char* getPixel(int x, int y);
+        char* getPixel(int x, int y);
         void setPixel(int x, int y, int r, int g, int b);
         void invertPixel(int x, int y);
         void drawCross();
     private:
-        int rowSize{};
-        int bytesPerPixel{};
         BmpHeader header{};
         BmpInfoHeader infoHeader{};
-        std::vector<unsigned char> extraData0{};
-        std::vector<unsigned char> data{};
-        std::vector<unsigned char> extraData1{};
+        int rowSize{};
+        int bytesPerPixel{};
+        std::vector<char> data{};
 };
 
 #endif
