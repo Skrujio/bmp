@@ -12,33 +12,16 @@ void BmpReader::readFromFile(const std::string& filename) {
     ifs.exceptions(std::ios_base::failbit | std::ios_base::badbit);
     ifs.open(filename);
 
-    ifs.read(reinterpret_cast<char*>(&header.type), 2);
+    ifs.read(reinterpret_cast<char*>(&header), sizeof(header));
+    ifs.read(reinterpret_cast<char*>(&infoHeader), sizeof(infoHeader));
     
     if (header.type != 0x4d42) {
         throw std::runtime_error("wrong file type");
     }
-
-    ifs.read(reinterpret_cast<char*>(&header.fileSize), 4);
-    ifs.read(reinterpret_cast<char*>(&header.reserved0), 2);
-    ifs.read(reinterpret_cast<char*>(&header.reserved1), 2);
-    ifs.read(reinterpret_cast<char*>(&header.offset), 4);
-
-    ifs.read(reinterpret_cast<char*>(&infoHeader.headerSize), 4);
-    ifs.read(reinterpret_cast<char*>(&infoHeader.width), 4);
-    ifs.read(reinterpret_cast<char*>(&infoHeader.height), 4);
-    ifs.read(reinterpret_cast<char*>(&infoHeader.colorPlanes), 2);
-    ifs.read(reinterpret_cast<char*>(&infoHeader.bitsPerPixel), 2);
     
     if (infoHeader.bitsPerPixel != 24 && infoHeader.bitsPerPixel != 32) {
         throw std::runtime_error("unsupported pixel format");
     }
-    
-    ifs.read(reinterpret_cast<char*>(&infoHeader.compressionMethod), 4);
-    ifs.read(reinterpret_cast<char*>(&infoHeader.imageSize), 4);
-    ifs.read(reinterpret_cast<char*>(&infoHeader.horizontalResolution), 4);
-    ifs.read(reinterpret_cast<char*>(&infoHeader.verticalResolution), 4);
-    ifs.read(reinterpret_cast<char*>(&infoHeader.colorPalette), 4);
-    ifs.read(reinterpret_cast<char*>(&infoHeader.importantColors), 4);
 
     extraData0.resize(header.offset - ifs.tellg());
     ifs.read(reinterpret_cast<char*>(extraData0.data()), extraData0.size());
@@ -48,6 +31,8 @@ void BmpReader::readFromFile(const std::string& filename) {
 
     extraData1.resize(header.fileSize - ifs.tellg());
     ifs.read(reinterpret_cast<char*>(extraData1.data()), extraData1.size());
+
+    ifs.close();
 
     rowSize = (infoHeader.bitsPerPixel * infoHeader.width / 32) * 4;
     bytesPerPixel = infoHeader.bitsPerPixel / 8;
@@ -60,25 +45,13 @@ void BmpReader::writeToFile(const std::string& filename) {
         throw std::runtime_error("failed to open file");
     }
 
-    ofs.write(reinterpret_cast<char*>(&header.type), 2);
-    ofs.write(reinterpret_cast<char*>(&header.fileSize), 4);
-    ofs.write(reinterpret_cast<char*>(&header.reserved0), 2);
-    ofs.write(reinterpret_cast<char*>(&header.reserved1), 2);
-    ofs.write(reinterpret_cast<char*>(&header.offset), 4);
-    ofs.write(reinterpret_cast<char*>(&infoHeader.headerSize), 4);
-    ofs.write(reinterpret_cast<char*>(&infoHeader.width), 4);
-    ofs.write(reinterpret_cast<char*>(&infoHeader.height), 4);
-    ofs.write(reinterpret_cast<char*>(&infoHeader.colorPlanes), 2);
-    ofs.write(reinterpret_cast<char*>(&infoHeader.bitsPerPixel), 2);
-    ofs.write(reinterpret_cast<char*>(&infoHeader.compressionMethod), 4);
-    ofs.write(reinterpret_cast<char*>(&infoHeader.imageSize), 4);
-    ofs.write(reinterpret_cast<char*>(&infoHeader.horizontalResolution), 4);
-    ofs.write(reinterpret_cast<char*>(&infoHeader.verticalResolution), 4);
-    ofs.write(reinterpret_cast<char*>(&infoHeader.colorPalette), 4);
-    ofs.write(reinterpret_cast<char*>(&infoHeader.importantColors), 4);
+    ofs.write(reinterpret_cast<char*>(&header), sizeof(header));
+    ofs.write(reinterpret_cast<char*>(&infoHeader), sizeof(infoHeader));
     ofs.write(reinterpret_cast<char*>(extraData0.data()), extraData0.size());
     ofs.write(reinterpret_cast<char*>(data.data()), data.size());
     ofs.write(reinterpret_cast<char*>(extraData1.data()), extraData1.size());
+
+    ofs.close();
 }
 
 void BmpReader::writeToStdout() {
