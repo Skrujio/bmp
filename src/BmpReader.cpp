@@ -12,8 +12,9 @@ void BmpReader::readFromFile(const std::string& filename) {
     ifs.exceptions(std::ios_base::failbit | std::ios_base::badbit);
     ifs.open(filename);
 
-    ifs.read(reinterpret_cast<char*>(&header), sizeof(header));
-    ifs.read(reinterpret_cast<char*>(&infoHeader), sizeof(infoHeader));
+    ifs.read(reinterpret_cast<char*>(&header), sizeof(header) + sizeof(infoHeader));
+    // ifs.read(reinterpret_cast<char*>(&header), sizeof(header));
+    // ifs.read(reinterpret_cast<char*>(&infoHeader), sizeof(infoHeader));
     
     if (header.type != 0x4d42) {
         throw std::runtime_error("wrong file type");
@@ -39,8 +40,9 @@ void BmpReader::writeToFile(const std::string& filename) {
         throw std::runtime_error("failed to open file");
     }
 
-    ofs.write(reinterpret_cast<char*>(&header), sizeof(header));
-    ofs.write(reinterpret_cast<char*>(&infoHeader), sizeof(infoHeader));
+    ofs.write(reinterpret_cast<char*>(&header), sizeof(header) + sizeof(infoHeader));
+    // ofs.write(reinterpret_cast<char*>(&header), sizeof(header));
+    // ofs.write(reinterpret_cast<char*>(&infoHeader), sizeof(infoHeader));
     ofs.write(reinterpret_cast<char*>(data.data()), data.size());
 
     ofs.close();

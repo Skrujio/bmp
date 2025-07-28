@@ -7,27 +7,27 @@
 
 #pragma pack(push,1)
 struct BmpHeader {
-    int16_t type{};         // 2
-    int32_t fileSize{};     // 4
-    int16_t reserved0{};    // 2
-    int16_t reserved1{};    // 2
-    int32_t offset{};       // 4
+    int16_t type{};
+    int32_t fileSize{};
+    int16_t reserved0{};
+    int16_t reserved1{};
+    int32_t offset{};
 };
 #pragma pack(pop)
 
 #pragma pack(push,1)
 struct BmpInfoHeader {
-    int32_t headerSize{};           // 4
-    int32_t width{};                // 4
-    int32_t height{};               // 4
-    int16_t colorPlanes{};          // 2
-    int16_t bitsPerPixel{};         // 2
-    int32_t compressionMethod{};    // 4
-    int32_t imageSize{};            // 4
-    int32_t horizontalResolution{}; // 4
-    int32_t verticalResolution{};   // 4
-    int32_t colorPalette{};         // 4
-    int32_t importantColors{};      // 4
+    int32_t headerSize{};
+    int32_t width{};
+    int32_t height{};
+    int16_t colorPlanes{};
+    int16_t bitsPerPixel{};
+    int32_t compressionMethod{};
+    int32_t imageSize{};
+    int32_t horizontalResolution{};
+    int32_t verticalResolution{};
+    int32_t colorPalette{};
+    int32_t importantColors{};
     int32_t redBitMask{};
     int32_t greenBitMask{};
     int32_t blueBitMask{};
